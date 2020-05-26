@@ -1,0 +1,101 @@
+{
+    "enpoints":[
+        {
+            "method":"POST",
+            "uri":"/comments",
+            "description":"Create an comment on a topic.",
+            "header":[
+                {
+                    "key":"Authorization",
+                    "type":"string",
+                    "required":"true",
+                    "descripition":"Authorization code."
+                },
+                {
+                    "key":"idTopic",
+                    "type":"integer",
+                    "required":"true",
+                    "descripition":"Topic identification code."
+                }
+            ],
+            "query_string":[],
+            "request_body":[
+                {
+                    "key":"message",
+                    "type":"string",
+                    "required":"true",
+                    "descripition":"Message body of comment."
+                },
+                {
+                    "key":"highlighted",
+                    "type":"string",
+                    "required":"false",
+                    "descripition":"To flag comment must be highligthed."
+                }
+            ]
+        },
+        {
+            "method":"GET",
+            "uri":"/comments",
+            "description":"Return a list of comments.",
+            "header":[
+                {
+                    "key":"Authorization",
+                    "type":"string",
+                    "required":"true",
+                    "descripition":"Authorization code."
+                }
+            ],
+            "query_string":[
+                {
+                    "key":"idTopic",
+                    "type":"integer",
+                    "required":"false",
+                    "descripition":"Topic identification code."
+                },
+                {
+                    "key":"idUser",
+                    "type":"integer",
+                    "required":"false",
+                    "descripition":"User identification code."
+                }
+            ]
+            
+        },
+        {
+            "method":"DELETE",
+            "uri":"/comments/{idComment}",
+            "description":"Delete an comment.",
+            "header":[
+                {
+                    "key":"Authorization",
+                    "type":"string",
+                    "required":"true",
+                    "descripition":"Authorization code."
+                }
+            ],
+            "query_string":[]
+        },
+        {
+            "method":"GET",
+            "uri":"/notifications",
+            "description":"Return a list of notifications.",
+            "header":[
+                {
+                    "key":"Authorization",
+                    "type":"string",
+                    "required":"true",
+                    "descripition":"Authorization code."
+                }
+            ],
+            "query_string":[
+                {
+                    "key":"idUser",
+                    "type":"integer",
+                    "required":"false",
+                    "descripition":"User identification code."
+                }
+            ]
+        }
+    ]
+}
