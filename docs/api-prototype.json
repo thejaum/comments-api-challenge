@@ -3,7 +3,7 @@
         {
             "method":"POST",
             "uri":"/comments",
-            "description":"Create an comment on a topic.",
+            "description":"Create an comment on a post.",
             "header":[
                 {
                     "key":"Authorization",
@@ -12,10 +12,10 @@
                     "descripition":"Authorization code."
                 },
                 {
-                    "key":"idTopic",
+                    "key":"id_post",
                     "type":"integer",
                     "required":"true",
-                    "descripition":"Topic identification code."
+                    "descripition":"Post identification code."
                 }
             ],
             "query_string":[],
@@ -27,10 +27,10 @@
                     "descripition":"Message body of comment."
                 },
                 {
-                    "key":"highlighted",
+                    "key":"highlight_minutes",
                     "type":"string",
                     "required":"false",
-                    "descripition":"To flag comment must be highligthed."
+                    "descripition":"Amount in minutes comment must be highligthed."
                 }
             ]
         },
@@ -48,13 +48,13 @@
             ],
             "query_string":[
                 {
-                    "key":"idTopic",
+                    "key":"id_post",
                     "type":"integer",
                     "required":"false",
-                    "descripition":"Topic identification code."
+                    "descripition":"Post identification code."
                 },
                 {
-                    "key":"idUser",
+                    "key":"id_user",
                     "type":"integer",
                     "required":"false",
                     "descripition":"User identification code."
@@ -64,7 +64,7 @@
         },
         {
             "method":"DELETE",
-            "uri":"/comments/{idComment}",
+            "uri":"/comments/{id_comment}",
             "description":"Delete an comment.",
             "header":[
                 {
@@ -90,7 +90,7 @@
             ],
             "query_string":[
                 {
-                    "key":"idUser",
+                    "key":"id_user",
                     "type":"integer",
                     "required":"false",
                     "descripition":"User identification code."
