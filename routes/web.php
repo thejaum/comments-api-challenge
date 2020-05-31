@@ -13,6 +13,10 @@
 |
 */
 
-$router->get('/', function () use ($router) {
-    return $router->app->version();
+$router->get('/', function () use ($router){
+    return 'Comments Api Challenge version ' . $router->app->version();
+});
+
+$router->get('/config', function () use ($router) {
+    return \App\ApiSettings::all();
 });

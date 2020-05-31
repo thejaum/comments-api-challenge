@@ -5,8 +5,8 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 
 
-class User extends Model
+class Notifications extends Model
 {
-    public $table = "users";
+    public $table = "notifications";
 }
 ?>

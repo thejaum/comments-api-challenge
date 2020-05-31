@@ -1,12 +1,10 @@
 <?php
 
 namespace App;
-
 use Illuminate\Database\Eloquent\Model;
 
-
-class User extends Model
+class ApiSettings extends Model
 {
-    public $table = "users";
+    public $table = "api_settings";
 }
 ?>
