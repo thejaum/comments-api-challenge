@@ -28,7 +28,7 @@
                 },
                 {
                     "key":"highlight_minutes",
-                    "type":"string",
+                    "type":"integer",
                     "required":"false",
                     "descripition":"Amount in minutes comment must be highligthed."
                 }

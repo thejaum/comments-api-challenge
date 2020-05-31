@@ -2,11 +2,11 @@
 
 /** @var \Illuminate\Database\Eloquent\Factory $factory */
 
-use App\ApiSettings;
-use App\Comment;
-use App\Post;
-use App\User;
-use App\Wallet;
+use App\Models\ApiSettings;
+use App\Models\Comment;
+use App\Models\Post;
+use App\Models\User;
+use App\Models\Wallet;
 use Faker\Generator as Faker;
 
 use Illuminate\Support\Arr;

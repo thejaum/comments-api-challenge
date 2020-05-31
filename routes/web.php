@@ -18,5 +18,11 @@ $router->get('/', function () use ($router){
 });
 
 $router->get('/config', function () use ($router) {
-    return \App\ApiSettings::all();
+    return \App\Models\ApiSettings::all();
 });
+
+$router->group(['prefix'=>'comments'],function() use($router){
+    $router->get('','CommentController@getAll');
+    $router->post('','CommentController@store');
+});
+

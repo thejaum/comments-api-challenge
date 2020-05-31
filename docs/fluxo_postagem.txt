@@ -1,0 +1,26 @@
+Legendas : [
+	'Comentarista':'Usuario realizando o comentario',
+	'Postador':'Usuario dono do post'
+]
+Antes de inserir o comentario
+-> Buscar todos os dados do usuario que esta comentando;
+-> Buscar todos os dados da postagem;
+-> Buscar todos os dados do usuario dono da postagem;
+-> Buscar parametros da api_settings para limite de postagens por intervalo.
+
+-> Comentarista fez X postagens nos ultimos Y segundos ?
+	Sim: Impedir comentario.
+	Não: Proxima validação.
+-> Comentarista comprou destaque ?
+	Sim: Comentarista tem salo suficiente ?
+		Sim: Efetuar comentario.
+			* Registrar Transação da compra e da retenção do sistema.
+			* Enviar moedas para o Postador.
+		Não: Impedir comentario.
+	Não: Proxima validação.
+-> Comentarista é assinante ?
+	Sim: Efetuar comentario.
+	Não: Proxima validação.
+-> Postador é Assinante ?
+	Sim: Efetuar comentario.
+	Não: Impedir comentario.

@@ -11,6 +11,6 @@ class ApiSettingsSeeder extends Seeder
      */
     public function run()
     {
-        factory(\App\ApiSettings::class ,1)-> create();
+        factory(\App\Models\ApiSettings::class ,1)-> create();
     }
 }
