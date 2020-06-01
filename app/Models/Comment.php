@@ -13,5 +13,9 @@ class Comment extends Model
         'id_user',
         'message'
     ];
+
+    public function getIdComment() {
+        return $this->username;
+    }
 }
 ?>

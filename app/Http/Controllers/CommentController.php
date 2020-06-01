@@ -6,6 +6,7 @@ use App\Exceptions\CustomValidationException;
 use App\Services\CommentService;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Exception;
 use Symfony\Component\HttpFoundation\Response;
 
 class CommentController extends Controller
@@ -21,15 +22,17 @@ class CommentController extends Controller
         $this->service = $service;
     }
 
-    public function getAll()
+    public function getAll(Request $request)
     {
         try {
+            $id_user_query_string = $request->query('id_user');
+            $id_post_query_string = $request->query('id_post');
             return response()->json(
-                $this->service->getAll(), 
+                $this->service->getAll($id_user_query_string,$id_post_query_string), 
                 Response::HTTP_OK);
         } catch (CustomValidationException $e) {
             return $this->error($e->getMessage(), $e->getDetails(),$e->getCode());
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return $this->error($e->getMessage());
         }
 
@@ -44,7 +47,7 @@ class CommentController extends Controller
             );
         } catch (CustomValidationException $e) {
             return $this->error($e->getMessage(), $e->getDetails(),$e->getCode());
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return $this->error($e->getMessage());
         }
     }

@@ -10,16 +10,23 @@
                     "type":"string",
                     "required":"true",
                     "descripition":"Authorization code."
-                },
+                }
+                
+            ],
+            "query_string":[],
+            "request_body":[
                 {
                     "key":"id_post",
                     "type":"integer",
                     "required":"true",
                     "descripition":"Post identification code."
-                }
-            ],
-            "query_string":[],
-            "request_body":[
+                },
+                {
+                    "key":"id_user",
+                    "type":"integer",
+                    "required":"true",
+                    "descripition":"Post identification code."
+                },
                 {
                     "key":"message",
                     "type":"string",
