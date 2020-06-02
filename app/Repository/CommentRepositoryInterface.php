@@ -15,5 +15,7 @@ interface CommentRepositoryInterface
     public function store(array $data);
 
     public function getAmountOfCommentsByIdUserInLastSeconds($id_user,$seconds);
+
+    public function getCommentsByArrayOfId($ids);
 }
 ?>

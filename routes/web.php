@@ -24,5 +24,9 @@ $router->get('/config', function () use ($router) {
 $router->group(['prefix'=>'comments'],function() use($router){
     $router->get('','CommentController@getAll');
     $router->post('','CommentController@store');
+    $router->delete('/{id}','CommentController@delete');
+});
+$router->group(['prefix'=>'notifications'],function() use($router){
+    $router->get('','NotificationController@getAll');
 });
 

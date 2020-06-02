@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 
@@ -17,7 +18,24 @@ class User extends Model
         'subscribe',
         'birthdate',
         'email',
-        'coin_balance'
+        'coin_balance',
+        'created_at',
+        'updated_at'
     ];
+
+    public function getCreatedAtAttribute($value)
+    {
+        return Carbon::createFromTimestamp(strtotime($value))
+            ->timezone('America/Sao_Paulo')
+            ->toDateTimeString()
+        ;
+    }
+    public function getUpdatedAtAttribute($value)
+    {
+        return Carbon::createFromTimestamp(strtotime($value))
+            ->timezone('America/Sao_Paulo')
+            ->toDateTimeString()
+        ;
+    }
 }
 ?>

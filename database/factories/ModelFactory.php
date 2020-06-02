@@ -97,7 +97,7 @@ $factory->define(User::class, function (Faker $faker){
         'username' => $faker->userName,
         'sign' => $sign,
         'birthdate' => $birthdate,
-        'subscribe' => $faker-> boolean(30),
+        'subscribe' => $faker-> boolean(40),
         'email' => $faker->email,
         'coin_balance' => rand(0,500)
     ];

@@ -11,6 +11,7 @@ use App\Exceptions\CustomValidationException;
 use App\Models\Comment;
 use App\Repository\HighlightCommentRepositoryInterface;
 use App\Repository\TransactionRepositoryInterface;
+use DateTime;
 use Exception;
 use Illuminate\Support\Facades\DB;
 
@@ -41,9 +42,45 @@ class CommentService
         $this->repo_transaction = $repo_transaction;
         $this->service_notification = $service_notification;
     }
+ 
     public function getAll($id_user = 0,$id_post = 0)
     {
-        return $this->repo_comment->getAll($id_user,$id_post)->paginate();
+        $all_comments = $this->repo_comment->getAll($id_user,$id_post);
+        /*
+        * After retrieve all comments, we check if there's any highlithed and NOT expired comment.
+        * separating in two arrays, of highlithed and not highlithed comments.
+        */
+        $date_now = date("Y-m-d H:i:s");
+        $highlighted_comment=[];
+        $normal_comment=[];
+        foreach($all_comments->get() as $key => $value) {
+            if ($value['expiration_date'] != null 
+            && $date_now < $value['expiration_date']) {
+                $highlighted_comment[] = $value;
+            } else {
+                $normal_comment[] = $value;
+            }
+        }
+        if(count($highlighted_comment) > 0){
+            /*
+            * For the highlithed array, we sort now by coin_paid, because wo paid more must be
+            * up than the others.
+            */
+            usort($highlighted_comment,function($first,$second){
+                return $first->coin_paid < $second->coin_paid;
+            });
+            /*
+            * With all sort flow done, we merge the arrays and create another array just with the
+            * id_sequence. With that sequence we select comments again only for use paginate() of eloquent;
+            */
+            $array = array_merge($highlighted_comment, $normal_comment);
+            $ids = []; 
+            foreach ($array as &$value) {
+                $ids[] = $value['id_comment'] ;
+            };
+            return $this->repo_comment->getCommentsByArrayOfId($ids)->paginate();
+        }
+        return $all_comments->paginate();
     }
 
     public function get($id)
@@ -63,9 +100,24 @@ class CommentService
         DB::beginTransaction();
         try {
             $user_commenting = $this->repo_user->get($data['id_user']);
+            if($user_commenting == null)    
+                throw new CustomValidationException('The id_user are invalid.',[
+                'id_user' => $data['id_user']
+                ],400);
             $post_owner = $this->repo_post->get($data['id_post']);
+            if($post_owner == null)    
+                throw new CustomValidationException('The id_post are invalid.',[
+                'id_post' => $data['id_post']
+                ],400);
             $user_post_owner = $this->repo_user->get($post_owner->id_user);
+            if($user_post_owner == null)    
+                throw new CustomValidationException('The user owner of post was not found',[
+                'id_post' => $data['id_post']
+                ],500);
             $api_settings = $this->repo_api_settings->get();
+            if($api_settings == null)    
+                throw new CustomValidationException('Api Settings not configured.'
+                ,[],500);
             /*
             *  Check if user already reach the max numbers of comments allowed in the last X seconds.
             *  Quantity of comments and seconds are defined in api_settings table.
@@ -78,7 +130,7 @@ class CommentService
                 ,'user_comments_number' => $comments_past_seconds
                 ],403);
             /*
-            *  Check if user have balance to purchase the amount of highligth are attempt to buy.
+            *  Check if user have balance to purchase the amount of highligth are attempt to do.
             */
             if(array_key_exists("highlight_minutes", $data)){
                 $highlight_amount = $data['highlight_minutes'];
@@ -89,7 +141,8 @@ class CommentService
                     $expiration_date->modify('+'.$highlight_amount.' minutes');
                     $created_highlight_id = $this->repo_highlight->store([
                         'id_comment'=>$created_comment_id,
-                        'expiration_date'=>$expiration_date
+                        'expiration_date'=>$expiration_date,
+                        'coin_paid'=>$highlight_amount
                     ])->id;
                     $data['id_comment'] = $created_comment_id;
                     $retain_system_percent = ($api_settings->retain_percentage / 100) * $highlight_amount;
@@ -132,7 +185,7 @@ class CommentService
                 $this->service_notification->store([
                     'title'=>'You have a new comment.',
                     'message'=>$user_commenting->name.' commented in your post.',
-                    'id_user'=>$user_post_owner->id
+                    'id_user'=>$user_post_owner->id_user
                 ]);
                 DB::commit();
                 return $created_comment;
@@ -144,12 +197,58 @@ class CommentService
                 $this->service_notification->store([
                     'title'=>'You have a new comment.',
                     'message'=>$user_commenting->name.' commented in your post.',
-                    'id_user'=>$user_post_owner->id
+                    'id_user'=>$user_post_owner->id_user
                 ]);
                 DB::commit();
                 return $created_comment;
             }
-            throw new CustomValidationException('User dont meet any condition to allow comment.',[],403);
+            throw new CustomValidationException('User dont meet any condition to allow to comment.',[
+                'User is not subscribed.',
+                'User dont purchased highlight.',
+                'Owner of post is not subscribed.',
+            ],403);
+        } catch (Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+    }
+
+    public function delete ($id_comment,$id_user){
+        if ($id_user==null)
+            throw new CustomValidationException('Usuario não informado.',[] ,400);
+        DB::beginTransaction();
+        try {
+            $comment = $this->repo_comment->get($id_comment);
+            if($comment == null)    
+                throw new CustomValidationException('The $id_comment are invalid.',[
+                'id_comment' => $id_comment
+                ],400);
+            $post = $this->repo_post->get($comment->id_post);
+            if($post == null)    
+                throw new CustomValidationException('The id_post are invalid.',[
+                'id_post' => $comment->id_post
+                ],400);
+            if($id_user == $post->id_user){
+                if(!$comment->visible)
+                    throw new CustomValidationException('Resource already removed or not found.',[
+                    'id_comment' => $comment->id_comment],404);
+                $comment->visible = false;
+                $comment->save();
+                DB::commit();
+                return $id_comment;
+            }else if ($id_user == $comment->id_user){
+                if(!$comment->visible)
+                    throw new CustomValidationException('Resource already removed or not found.',[
+                    'id_comment' => $comment->id_comment],404);
+                $comment->visible = false;
+                $comment->save();
+                DB::commit();
+                return $id_comment;
+            }
+            throw new CustomValidationException('User dont meet any condition to allow to comment.',[
+                'User is not owner of post.',
+                'User is not owner of comment.',
+            ],403);
         } catch (Exception $e) {
             DB::rollBack();
             throw $e;

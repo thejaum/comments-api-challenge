@@ -51,4 +51,18 @@ class CommentController extends Controller
             return $this->error($e->getMessage());
         }
     }
+
+    public function delete($id,Request $request)
+    {
+        try {
+            $id_user_query_string = $request->header('id_user');                
+                $this->service->delete($id,$id_user_query_string);
+                return response()->json(['message'=>'Comment has been deleted.'],
+                Response::HTTP_OK);
+        } catch (CustomValidationException $e) {
+            return $this->error($e->getMessage(), $e->getDetails(),$e->getCode());
+        } catch (Exception $e) {
+            return $this->error($e->getMessage());
+        }
+    }
 }

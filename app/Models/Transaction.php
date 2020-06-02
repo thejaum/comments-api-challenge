@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 
@@ -12,7 +13,24 @@ class Transaction extends Model
         'id_transaction',
         'id_highlight_comment',
         'coin_amount',
-        'type'
+        'type',
+        'created_at',
+        'updated_at'
     ];
+
+    public function getCreatedAtAttribute($value)
+    {
+        return Carbon::createFromTimestamp(strtotime($value))
+            ->timezone('America/Sao_Paulo')
+            ->toDateTimeString()
+        ;
+    }
+    public function getUpdatedAtAttribute($value)
+    {
+        return Carbon::createFromTimestamp(strtotime($value))
+            ->timezone('America/Sao_Paulo')
+            ->toDateTimeString()
+        ;
+    }
 }
 ?>

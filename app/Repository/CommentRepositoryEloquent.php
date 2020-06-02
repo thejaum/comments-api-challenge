@@ -21,6 +21,7 @@ class CommentRepositoryEloquent implements CommentRepositoryInterface {
             'users.subscribe',
             'highlight_comment.id_highlight_comment',
             'highlight_comment.expiration_date',
+            'highlight_comment.coin_paid',
             'comments.created_at',
             'comments.message'
             )
@@ -36,6 +37,7 @@ class CommentRepositoryEloquent implements CommentRepositoryInterface {
                 ['comments.id_post','=',$id_post]
             ]);
         })
+        ->where('visible','=',true)
         ->orderBy('comments.created_at','DESC');
     }
 
@@ -56,6 +58,25 @@ class CommentRepositoryEloquent implements CommentRepositoryInterface {
             ['created_at', '>',$formatted_date],
             ['id_user','=',$id_user]
             ])->count();
+    }
+
+    public function getCommentsByArrayOfId($ids){
+        return $this->model->select(
+            'users.id_user',
+            'comments.id_comment',
+            'comments.id_post',
+            'users.username',
+            'users.subscribe',
+            'highlight_comment.id_highlight_comment',
+            'highlight_comment.expiration_date',
+            'highlight_comment.coin_paid',
+            'comments.created_at',
+            'comments.message'
+            )
+        ->join('users', 'comments.id_user', '=', 'users.id_user')
+        ->leftjoin('highlight_comment', 'comments.id_comment', '=', 'highlight_comment.id_comment')
+        ->whereIn('comments.id_comment', $ids)
+        ->orderByRaw('FIELD (comments.id_comment, ' . implode(', ', $ids) . ') ASC');
     }
 }
 

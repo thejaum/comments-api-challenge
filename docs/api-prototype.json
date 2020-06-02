@@ -70,20 +70,6 @@
             
         },
         {
-            "method":"DELETE",
-            "uri":"/comments/{id_comment}",
-            "description":"Delete an comment.",
-            "header":[
-                {
-                    "key":"Authorization",
-                    "type":"string",
-                    "required":"true",
-                    "descripition":"Authorization code."
-                }
-            ],
-            "query_string":[]
-        },
-        {
             "method":"GET",
             "uri":"/notifications",
             "description":"Return a list of notifications.",
@@ -103,6 +89,26 @@
                     "descripition":"User identification code."
                 }
             ]
+        },
+        {
+            "method":"DELETE",
+            "uri":"/comments/{id_comment}",
+            "description":"Delete an comment.",
+            "header":[
+                {
+                    "key":"Authorization",
+                    "type":"string",
+                    "required":"true",
+                    "descripition":"Authorization code."
+                },
+                {
+                    "key":"id_user",
+                    "type":"integer",
+                    "required":"true",
+                    "descripition":"User identification code."
+                }
+            ],
+            "query_string":[]
         }
     ]
 }
