@@ -13,8 +13,12 @@ class ApiSettingsRepositoryEloquent implements ApiSettingsRepositoryInterface {
     }
 
     public function get()
-    {
-        return $this->model->first();
+    {   
+        if(app('redis')->exists('api_settings'))
+            return unserialize(app('redis')->get('api_settings'));
+        $api_settings = $this->model->first();
+        app('redis')->set('api_settings',serialize($api_settings));
+        return $api_settings;
     }
 
     public function store(array $data)

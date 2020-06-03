@@ -27,6 +27,11 @@ $app->withFacades();
 
 $app->withEloquent();
 
+
+$app->register(Illuminate\Redis\RedisServiceProvider::class);
+if (!class_exists('Redis')) {
+    class_alias('Illuminate\Support\Facades\Redis', 'Redis');
+}
 /*
 |--------------------------------------------------------------------------
 | Register Container Bindings

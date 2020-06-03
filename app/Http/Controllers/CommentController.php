@@ -27,8 +27,9 @@ class CommentController extends Controller
         try {
             $id_user_query_string = $request->query('id_user');
             $id_post_query_string = $request->query('id_post');
+            $currentPage = request()->get('page',1);
             return response()->json(
-                $this->service->getAll($id_user_query_string,$id_post_query_string), 
+                $this->service->getAll($id_user_query_string,$id_post_query_string,$currentPage), 
                 Response::HTTP_OK);
         } catch (CustomValidationException $e) {
             return $this->error($e->getMessage(), $e->getDetails(),$e->getCode());

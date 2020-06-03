@@ -43,8 +43,14 @@ class CommentService
         $this->service_notification = $service_notification;
     }
  
-    public function getAll($id_user = 0,$id_post = 0)
+    public function getAll($id_user,$id_post,$currentPage)
     {
+        
+        $cache_key = 'listcommets-'.$id_post.'-'.$currentPage;
+        $allKeys = app('redis')->keys('listcommets-'.$id_post.'*');
+        if(app('redis')->exists($cache_key))
+            return unserialize(app('redis')->get($cache_key));
+        
         $all_comments = $this->repo_comment->getAll($id_user,$id_post);
         /*
         * After retrieve all comments, we check if there's any highlithed and NOT expired comment.
@@ -78,8 +84,13 @@ class CommentService
             foreach ($array as &$value) {
                 $ids[] = $value['id_comment'] ;
             };
-            return $this->repo_comment->getCommentsByArrayOfId($ids)->paginate();
+            $list_comments = $this->repo_comment->getCommentsByArrayOfId($ids)->paginate();
+            if($id_post != null)
+                app('redis')->set($cache_key,serialize($list_comments));
+            return $list_comments;
         }
+        if($id_post != null && !$all_comments->get()->isEmpty())
+            app('redis')->set($cache_key,serialize($all_comments->paginate()));
         return $all_comments->paginate();
     }
 
@@ -136,7 +147,7 @@ class CommentService
                 $highlight_amount = $data['highlight_minutes'];
                 if($user_commenting->coin_balance >= $highlight_amount){
                     $created_comment = $this->repo_comment->store($data);
-                    $created_comment_id = $created_comment->id;
+                    $created_comment_id = $created_comment->id_comment;
                     $expiration_date = new \DateTime();
                     $expiration_date->modify('+'.$highlight_amount.' minutes');
                     $created_highlight_id = $this->repo_highlight->store([
@@ -168,6 +179,7 @@ class CommentService
                         'id_user'=>$user_post_owner->id_user
                     ]);
                     DB::commit();
+                    $this->clearPostCommentsCache($data['id_post']);
                     return $created_comment;
                 }else{
                     throw new CustomValidationException('User coins are not enought to purchase the amount of highlight.',[
@@ -188,6 +200,7 @@ class CommentService
                     'id_user'=>$user_post_owner->id_user
                 ]);
                 DB::commit();
+                $this->clearPostCommentsCache($data['id_post']);
                 return $created_comment;
             /*
             *  Check if owner of post is subscribed
@@ -200,6 +213,7 @@ class CommentService
                     'id_user'=>$user_post_owner->id_user
                 ]);
                 DB::commit();
+                $this->clearPostCommentsCache($data['id_post']);
                 return $created_comment;
             }
             throw new CustomValidationException('User dont meet any condition to allow to comment.',[
@@ -235,6 +249,7 @@ class CommentService
                 $comment->visible = false;
                 $comment->save();
                 DB::commit();
+                $this->clearPostCommentsCache($post->id_post);
                 return $id_comment;
             }else if ($id_user == $comment->id_user){
                 if(!$comment->visible)
@@ -243,6 +258,7 @@ class CommentService
                 $comment->visible = false;
                 $comment->save();
                 DB::commit();
+                $this->clearPostCommentsCache($post->id_post);
                 return $id_comment;
             }
             throw new CustomValidationException('User dont meet any condition to allow to comment.',[
@@ -253,6 +269,13 @@ class CommentService
             DB::rollBack();
             throw $e;
         }
+    }
+
+    public function clearPostCommentsCache($id_post){
+        $cache_key = 'listcommets-'.$id_post;
+        $allKeys = app('redis')->keys($cache_key.'*');
+        if($allKeys != null)
+            app('redis')->del($allKeys);
     }
 }
 ?>
