@@ -46,14 +46,7 @@
             "method":"GET",
             "uri":"/comments",
             "description":"Return a list of comments.",
-            "header":[
-                {
-                    "key":"Authorization",
-                    "type":"string",
-                    "required":"true",
-                    "descripition":"Authorization code."
-                }
-            ],
+            "header":[],
             "query_string":[
                 {
                     "key":"id_post",
@@ -78,14 +71,7 @@
             "method":"GET",
             "uri":"/notifications",
             "description":"Return a list of notifications.",
-            "header":[
-                {
-                    "key":"Authorization",
-                    "type":"string",
-                    "required":"true",
-                    "descripition":"Authorization code."
-                }
-            ],
+            "header":[],
             "query_string":[
                 {
                     "key":"id_user",
@@ -103,12 +89,6 @@
             "uri":"/comments/{id_comment}",
             "description":"Delete an comment.",
             "header":[
-                {
-                    "key":"Authorization",
-                    "type":"string",
-                    "required":"true",
-                    "descripition":"Authorization code."
-                },
                 {
                     "key":"id_user",
                     "type":"integer",
