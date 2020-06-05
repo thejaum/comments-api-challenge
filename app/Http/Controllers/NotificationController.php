@@ -16,7 +16,6 @@ class NotificationController extends Controller
      *
      * @return void
      */
-    
     public function __construct(NotificationService $service)
     {
         $this->service = $service;
@@ -28,7 +27,7 @@ class NotificationController extends Controller
             $id_user_query_string = $request->query('id_user');
             return response()->json(
                 $this->service->getAll($id_user_query_string), 
-                Response::HTTP_OK);            
+                Response::HTTP_OK);
         } catch (CustomValidationException $e) {
             return $this->error($e->getMessage(), $e->getDetails(),$e->getCode());
         } catch (Exception $e) {
